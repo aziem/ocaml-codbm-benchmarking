@@ -20,28 +20,28 @@ files=$(ls $FUNCTIONLOC/tests/*.c)
 compile_apron () {
     echo "Compiling Original Apron"
     cd ${APRONORIGDIR}
-    make clean && make -j 30 && ./reinstall-apron.sh
+    make clean && ./configure --no-java --no-ppl && make -j 30 && ./reinstall-apron.sh
     cd $currentdir
 }
 
 compile_hash () {
     echo "Compiling Seq No Strong"
     cd ${APRONSASDIR}/octagons; ./patchseqnostrong.sh; cd ..
-    make clean && make -j 30 &&./reinstall-apron.sh
+    make clean && ./configure --no-java --no-ppl & make -j 30 &&./reinstall-apron.sh
     cd $currentdir
 }
 
 compile_join_opt () {
     echo "Compiling Seq No Strong"
     cd ${APRONSASDIR}/octagons; ./patchseqnostrong-joinopt.sh; cd ..
-    make clean && make -j 30 &&./reinstall-apron.sh
+    make clean && ./configure --no-java --no-ppl && make -j 30 &&./reinstall-apron.sh
     cd $currentdir
 }
 
 compile_opt () {
     echo "Compiling Seq No Strong"
     cd ${APRONSASDIR}/octagons; ./patchseqnostrong-floydopt.sh; cd ..
-    make clean && make -j 30 &&./reinstall-apron.sh
+    make clean && ./configure --no-java --no-ppl && make -j 30 &&./reinstall-apron.sh
     cd $currentdir
 }
 
@@ -86,7 +86,7 @@ run_apron_benchmark () {
 
 run_apron_double_benchmark () {
     compile_apron
-    compile_function_dbl
+    compile_function_double
     run_benchmark apron dbl
 }
 
@@ -98,7 +98,7 @@ run_aplas_benchmark () {
 
 run_aplas_double_benchmark () {
     compile_aplas
-    compile_function_dbl
+    compile_function_double
     run_benchmark aplas dbl
 }
 
@@ -110,7 +110,7 @@ run_hash_benchmark () {
 
 run_hash_double_benchmark () {
     compile_hash
-    compile_function_dbl
+    compile_function_double
     run_benchmark hash dbl
 }
 
@@ -122,7 +122,7 @@ run_join_opt_benchmark () {
 
 run_join_opt_double_benchmark () {
     compile_join_opt
-    compile_function_dbl
+    compile_function_double
     run_benchmark joinopt dbl
 }
 
@@ -132,14 +132,27 @@ run_opt_benchmark () {
     run_benchmark opt mpq
 }
 
-run_join_opt_double_benchmark () {
+run_opt_double_benchmark () {
     compile_opt
-    compile_function_dbl
+    compile_function_double
     run_benchmark opt dbl
 }
 
 
-while getopts ":hd" opt; do
+process_results () {
+    echo "processing results"
+    for f in $files; do
+	if [ "$DOUBLE" = false ] ; then
+	    paste <(echo $f) ${f}.apron-mpq-mean.txt  ${f}.aplas-mpq-mean.txt ${f}.hash-mpq-mean.txt ${f}.joinopt-mpq-mean.txt ${f}.opt-mpq-mean.txt >> overall-results-mpq-mean.txt
+	else 
+            paste <(echo $f) ${f}.apron-dbl-mean.txt  ${f}.aplas-dbl-mean.txt ${f}.hash-dbl-mean.txt ${f}.joinopt-dbl-mean.txt ${f}.opt-dbl-mean.txt >> overall-results-dbl-mean.txt
+	fi
+    done
+}
+
+
+
+while getopts ":hdp" opt; do
     case ${opt} in
 	h )
 	    echo "Usage: "
@@ -148,7 +161,7 @@ while getopts ":hd" opt; do
 	    echo "./run-function-benchmarks.sh hashing          Runs SAS 2018 CoDBMs with hashing"
 	    echo "./run-function-benchmarks.sh hashing_join     Runs SAS 2018 CoDBMs with hashing + join optimisation"
 	    echo "./run-function-benchmarks.sh hashing_opt      Runs SAS 2018 CoDBMs with hashing + join + closure optimisation"
-	    echo "./run-function-benchmarks.sh all              Run all versions of Apron in sequence"
+	    echo "./run-function-benchmarks.sh all              Run all versions of Apron in sequence and process results"
 	    echo " "
 	    echo "Adding the -d option will select doubles. By default analysis is run using GMP MPQ rationals"
 	    echo " "
@@ -158,9 +171,15 @@ while getopts ":hd" opt; do
 	    echo "<C file>-apron-mpq-mean.txt"
 	    echo "<C file>-apron-mpq-median.txt"
 	    echo "and raw timings in the file <C file>.multitime.mpq.apron"
+	    echo " "
+	    echo "-p option will process the results this only works after running each version of Apron"
+	    echo "and will output overall-results-mpq-mean.txt or overall-results-dbl-mean.txt depending on the double option choice"
 	    ;;
 	d ) echo "Double option chosen"
 	    DOUBLE=true
+	    ;;
+	p ) echo "Processing results"
+	    process_results
 	    ;;
 	\? )
 	    echo "Invalid option: -$OPTARG, use -h to see options" 1>&2
@@ -174,8 +193,15 @@ shift $((OPTIND -1))
 subcommand=$1
 
 case "$subcommand" in
-    apronorig )
+    apron )
 	echo "Apron Original"
+	if [ "$DOUBLE" = true ] ; then
+	    echo "Running double"
+	    run_apron_double_benchmark
+	else
+	    echo "Running MPQ"
+	    run_apron_benchmark
+	fi
 	;;
     aplas )
 	echo "Aplas 2017 version (CoDBMs)"
@@ -230,6 +256,8 @@ case "$subcommand" in
 	    run_join_opt_benchmark
 	    echo "Running SAS 2018 Hash + Join + Closure Optimisation"
 	    run_opt_benchmark
+	    echo "Processing results"
+	    process_results
 	else
 	    echo "Running Apron (Double)"
 	    run_apron_double_benchmark
@@ -241,6 +269,8 @@ case "$subcommand" in
 	    run_join_opt_double_benchmark
 	    echo "Running SAS 2018 Hash + Join + Closure Optimisation (Double)"
 	    run_opt_double_benchmark
+	    echo "Processing results"
+	    process_results
 	fi
 	;;
     \?)
