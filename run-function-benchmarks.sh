@@ -143,14 +143,15 @@ process_results () {
     echo "processing results"
     for f in $files; do
 	if [ "$DOUBLE" = false ] ; then
-	    paste <(echo $f) ${f}.apron-mpq-mean.txt  ${f}.aplas-mpq-mean.txt ${f}.hash-mpq-mean.txt ${f}.joinopt-mpq-mean.txt ${f}.opt-mpq-mean.txt >> overall-results-mpq-mean.txt
-	else 
-            paste <(echo $f) ${f}.apron-dbl-mean.txt  ${f}.aplas-dbl-mean.txt ${f}.hash-dbl-mean.txt ${f}.joinopt-dbl-mean.txt ${f}.opt-dbl-mean.txt >> overall-results-dbl-mean.txt
+	    rm function-overall-results-mpq-mean.txt
+	    paste <(echo $f) ${f}.apron-mpq-mean.txt  ${f}.aplas-mpq-mean.txt ${f}.hash-mpq-mean.txt ${f}.joinopt-mpq-mean.txt ${f}.opt-mpq-mean.txt >> function-overall-results-mpq-mean.txt
+	else
+	    rm function-overall-results-dbl-mean.txt
+            paste <(echo $f) ${f}.apron-dbl-mean.txt  ${f}.aplas-dbl-mean.txt ${f}.hash-dbl-mean.txt ${f}.joinopt-dbl-mean.txt ${f}.opt-dbl-mean.txt >> function-overall-results-dbl-mean.txt
+	    
 	fi
     done
 }
-
-
 
 while getopts ":hdp" opt; do
     case ${opt} in

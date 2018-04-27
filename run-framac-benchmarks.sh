@@ -288,6 +288,7 @@ case "$subcommand" in
 	    run_join_opt_benchmark
 	    echo "Running SAS 2018 Hash + Join + Closure Optimisation"
 	    run_opt_benchmark
+	    process_results
 	else
 	    echo "Running Apron (Double)"
 	    run_apron_double_benchmark
@@ -299,6 +300,7 @@ case "$subcommand" in
 	    run_join_opt_double_benchmark
 	    echo "Running SAS 2018 Hash + Join + Closure Optimisation (Double)"
 	    run_opt_double_benchmark
+	    process_results
 	fi
 	;;
     \?)
