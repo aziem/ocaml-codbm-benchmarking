@@ -55,6 +55,10 @@ The script is fairly elaborate and will rebuild Apron and Frama-C automatically.
   ./run-function-benchmarks -d all
   #+END_SRC
 
+  This will produce the results file
+  function-overall-results-mpq-mean.txt or
+  function-overall-results-dbl-mean.txt
+
   For help see:
   
 #+BEGIN_SRC bash
