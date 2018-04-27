@@ -13,6 +13,3 @@
 [submodule "codbm-frama-c-benchmarks"]
 	path = codbm-frama-c-benchmarks
 	url = https://github.com/aziem/codbm-frama-c-benchmarks.git
-[submodule "frama-c-sulfur-kent"]
-	path = frama-c-sulfur-kent
-	url = https://github.com/aziem/frama-c-sulfur-kent.git

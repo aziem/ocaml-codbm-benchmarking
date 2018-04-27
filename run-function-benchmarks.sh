@@ -245,7 +245,7 @@ case "$subcommand" in
 	;;
     all )
 	echo "Run benchmarks with all versions of Apron"
-	if [ "$DOUBLE" = true ] ; then
+	if [ "$DOUBLE" = false ] ; then
 	    echo "Running Apron"
 	    run_apron_benchmark
 	    echo "Running Aplas"
