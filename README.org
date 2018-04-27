@@ -1,2 +1,62 @@
-Repository for SAS 18 paper
+#+TITLE: Repository for SAS 18 paper
 
+This contains scripts to perform the OCaml benchmarking for SAS 18 paper on CoDBMs
+
+* Frama-C Benchmarking
+
+The script ./run-framac-benchmarks.sh executes the benchmarks as in
+the paper. The result of the script is a file named
+frama-c-overall-results-mpq.txt (for GMP MPQ rationals) or
+frama-c-overall-results-dbl.txt (for doubles).
+
+
+The script runs 10 experiments:
+
+   1. Frama-C with original Apron on GNU MPQ rationals
+   2. Frama-C with APLAS 2017 CoDBMs on GNU MPQ rationals
+   3. Frama-C with SAS 2018 hashing version of CoDBMS on GNU MPQ rationals
+   4. Same as 3 but with additional join optimisations
+   5. Same as 4 but with additional closure optimisations
+
+   Then another 5 with the same as above but for standard doubles instead
+   of rationals.
+
+   To generate the above files do the following for MPQ rationals, (sit
+   back and grab some coffee as this takes a while to execute)
+
+   #+BEGIN_SRC bash
+./run-framac-benchmarks.sh -s all 
+   #+END_SRC
+
+   and for doubles do:
+
+#+BEGIN_SRC 
+./run-framac-benchmarks.sh -s -d all
+#+END_SRC
+
+For further usage information:
+
+#+BEGIN_SRC 
+./run-framac-benchmarks.sh -h
+#+END_SRC
+
+The script is fairly elaborate and will rebuild Apron and Frama-C automatically. 
+
+* Function Benchmarking
+
+  Similar to Frama-C above, but use:
+
+  #+BEGIN_SRC bash
+  ./run-function-benchmarks all
+  #+END_SRC
+  
+  or
+  #+BEGIN_SRC bash
+  ./run-function-benchmarks -d all
+  #+END_SRC
+
+  For help see:
+  
+#+BEGIN_SRC bash
+./run-function-benchmarks -h
+#+END_SRC
